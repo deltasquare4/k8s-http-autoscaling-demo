@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: custom-metrics-apiserver
+  name: custom-metrics-apiserver
+  namespace: custom-metrics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: custom-metrics-apiserver
+  template:
+    metadata:
+      labels:
+        app: custom-metrics-apiserver
+      name: custom-metrics-apiserver
+    spec:
+      serviceAccountName: custom-metrics-apiserver
+      containers:
+      - name: custom-metrics-apiserver
+        image: directxman12/k8s-prometheus-adapter-amd64
+        args:
+        - --secure-port=6443
+        - --cert-dir=/var/run/serving-cert
+        - --logtostderr=true
+        - --prometheus-url=http://prometheus.default.svc:9090/
+        - --metrics-relist-interval=5s
+        - --v=10
+        - --config=/etc/adapter/config.yaml
+        ports:
+        - containerPort: 6443
+        volumeMounts:
+        - mountPath: /var/run/serving-cert
+          name: volume-serving-cert
+          readOnly: false
+        - mountPath: /etc/adapter/
+          name: config
+          readOnly: true
+        - mountPath: /tmp
+          name: tmp-vol
+      volumes:
+      - emptyDir: {}
+        name: volume-serving-cert
+      - name: config
+        configMap:
+          name: adapter-config
+      - name: tmp-vol
+        emptyDir: {}
