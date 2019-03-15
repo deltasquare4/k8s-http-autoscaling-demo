@@ -13,11 +13,11 @@ This demo application demonstrates use of Kubernetes' `HorizontalPodAutoscaler` 
 
 ```
 docker build -t server .
+minikube start --vm-driver none
 ```
 
 ```
 # Setting Up Minikube
-kubectl -n kube-system edit po kube-controller-manager-minikube
 # Add the following argument to controller manager
 --horizontal-pod-autoscaler-downscale-delay=30s
 ```
@@ -31,4 +31,10 @@ minikube service prom-demo --url
 ab -n 100000 -c 20 $(minikube service prom-demo --url)/
 
 kubectl apply -f k8s/hpa.yaml
+```
+
+```
+kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1
+
+kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pods/*/http_requests"
 ```

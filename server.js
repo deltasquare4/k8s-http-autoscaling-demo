@@ -13,7 +13,7 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => {
   setTimeout(() => {
-    res.send('Hello World\n');
+    res.send('Hello Kubernetes Ahmedabad\n');
   }, Math.random() * 100);
 });
 
